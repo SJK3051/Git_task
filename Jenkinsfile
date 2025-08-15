@@ -9,6 +9,15 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    echo "Building Docker image..."
+                    docker build -t myapp:latest .
+                '''
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Building...'
