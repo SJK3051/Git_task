@@ -1,44 +1,38 @@
 pipeline {
     agent any
 
+    environment {
+        ANSIBLE_HOST_KEY_CHECKING = 'False'
+    }
+
     stages {
-        stage('Clone Repo') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/SJK3051/Git_task.git'
+                git branch: 'main', url: 'https://github.com/SJK3051/Git_task.git'
             }
         }
 
-        stage('Debug Workspace') {
+        stage('Build Step') {
             steps {
-                sh '''
-                    echo "Current working directory:"
-                    pwd
-                    echo "Listing files:"
-                    ls -lR
-                '''
+                echo "✅ Build steps go here (e.g., compile, test, docker build, etc.)"
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Run Ansible Playbook') {
             steps {
                 sh '''
-                    echo "Building Docker image..."
-                    
-                    # Check if Dockerfile exists at root
-                    if [ -f Dockerfile ]; then
-                        docker build -t myapp:latest .
-                    else
-                        echo "Dockerfile not found in root — searching..."
-                        DOCKERFILE_PATH=$(find . -name Dockerfile | head -n 1)
-                        if [ -z "$DOCKERFILE_PATH" ]; then
-                            echo "❌ No Dockerfile found in repository."
-                            exit 1
-                        fi
-                        DOCKER_DIR=$(dirname "$DOCKERFILE_PATH")
-                        echo "✅ Found Dockerfile at: $DOCKERFILE_PATH"
-                        docker build -t myapp:latest -f "$DOCKERFILE_PATH" "$DOCKER_DIR"
-                    fi
+                echo "🚀 Running Ansible Playbook..."
+                
+                # Ensure ansible is installed
+                if ! command -v ansible-playbook &> /dev/null
+                then
+                    echo "⚠️ Installing Ansible..."
+                    sudo apt update -y
+                    sudo apt install -y ansible
+                fi
+
+                # Run playbook with inventory
+                ansible-playbook -i inventory.ini playbook.yml
                 '''
             }
         }
