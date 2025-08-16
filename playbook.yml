@@ -1,0 +1,27 @@
+- hosts: web
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Update Nginx to listen on port 8081
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen 80 default_server;'
+        replace: 'listen 8081 default_server;'
+
+    - name: Update IPv6 listener
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen \[::\]:80 default_server;'
+        replace: 'listen [::]:8081 default_server;'
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+
