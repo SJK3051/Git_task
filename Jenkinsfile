@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/SJK3051/Git_task.git'
+                git branch: 'main', url: 'https://github.com/your-repo/ansible-project.git'
             }
         }
 
